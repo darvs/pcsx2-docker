@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+docker run -it --rm \
+  --user $(id -u):$(id -g) \
+	-e DISPLAY=unix$DISPLAY \
+  -e PULSE_SERVER=unix:/tmp/.pulse-native \
+	-v /run/user/1000/pulse/native:/tmp/.pulse-native	\
+  -v /tmp/.X11-unix/X0:/tmp/.X11-unix/X0 \
+	-v /etc/localtime:/etc/localtime:ro \
+  -v ${PWD}/data/bios:/bios \ 
+	pcsx2
+
+# vim: ts=2 sw=2 et:
