@@ -27,6 +27,7 @@ docker run -it --rm \
   -v ${PWD}/data/bios:/bios \
   -v ${IMGDIR}:/images \
   -v ${PWD}/config:/config \
+  -v ${PWD}/memcards:/memcards \
   pcsx2 \
 	/app/bootstrap "${IMG}"
   #PCSX2 "${IMG}"

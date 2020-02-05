@@ -6,12 +6,11 @@ chmod -R 777 /dev/dri/*
 groupadd -g ${PGID} abc
 useradd -m -d /home/abc -p /bin/bash -g root -G sudo,audio,video,plugdev -u ${PUID} abc
 
-mkdir -p /home/abc/.local
-chown abc.abc /home/abc/.local
-
-mkdir -p /home/abc/.config
-chown abc.abc /home/abc/.config
+mkdir -p /home/abc/{.local,.config}
 ln -s /config /home/abc/.config/PCSX2
+ln -sf /memcards /home/abc/.config/PCSX2/memcards
+
+chown -R abc.abc /home/abc
 
 cd /images
 sudo -H -E -g abc -u abc PCSX2 "$@"
