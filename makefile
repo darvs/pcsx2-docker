@@ -1,2 +1,2 @@
 all: Dockerfile
-	docker build -t pcsx2 .
+	DOCKER_BUILDKIT=1 docker build -t pcsx2 .

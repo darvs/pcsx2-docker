@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+chmod 666 /dev/input/*
+chmod -R 777 /dev/dri/*
+
+groupadd -g ${PGID} abc
+useradd -m -d /home/abc -p /bin/bash -g root -G sudo,audio,video,plugdev -u ${PUID} abc
+
+mkdir -p /home/abc/.local
+chown abc.abc /home/abc/.local
+
+mkdir -p /home/abc/.config
+chown abc.abc /home/abc/.config
+ln -s /config /home/abc/.config/PCSX2
+
+cd /images
+sudo -H -E -g abc -u abc PCSX2 "$@"

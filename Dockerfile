@@ -1,10 +1,10 @@
-FROM ubuntu:bionic
+FROM i386/ubuntu:bionic
 
-ADD \
-		https://github.com/just-containers/s6-overlay/releases/download/v1.22.1.0/s6-overlay-amd64.tar.gz /tmp/
+#ADD \
+		#https://github.com/just-containers/s6-overlay/releases/download/v1.22.1.0/s6-overlay-amd64.tar.gz /tmp/
 
-RUN \
-		tar xzvf /tmp/s6-overlay-amd64.tar.gz -C /
+#RUN \
+		#tar xzvf /tmp/s6-overlay-amd64.tar.gz -C /
 
 #RUN \
     #apt update && \
@@ -15,12 +15,13 @@ RUN \
     #apt update && \
     #apt install -y pcsx2
 		#add-apt-repository ppa:oibaf/graphics-drivers && \
+    #add-apt-repository multiverse && \
+    #dpkg --add-architecture i386 && \
+		#add-apt-repository ppa:oibaf/graphics-drivers && \
 
 RUN \
     apt update && \
-    dpkg --add-architecture i386 && \
-    apt install -y --no-install-recommends software-properties-common libcap2-bin && \
-    add-apt-repository multiverse && \
+    apt install -y software-properties-common libcap2-bin && \
     add-apt-repository ppa:pcsx2-team/pcsx2-daily && \
     apt update && \
     apt install -y pcsx2-unstable
@@ -43,9 +44,7 @@ ENV LC_ALL en_US.UTF-8
 
 RUN \
   apt install -y sudo && \
-  groupadd -g 1000 ubuntu && \
-  useradd -m -d /home/ubuntu -p /bin/bash -g root -G sudo,audio,video,plugdev -u 1000 ubuntu && \
-  echo "ubuntu:ubuntu" | chpasswd 
+  mkdir /app
 
 RUN \
   apt install -y jstest-gtk 
@@ -53,9 +52,13 @@ RUN \
 RUN \
 	apt install -y libsdl-image1.2-dev libsdl-dev
 
-USER ubuntu
-WORKDIR /home/ubuntu
+ADD bootstrap /app
 
-CMD PCSX2
+RUN \
+  chmod a+x /app/bootstrap
+
+WORKDIR /app
+
+CMD /app/bootstrap
 
 # vim: ts=2 sw=2 et:
