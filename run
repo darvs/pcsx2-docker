@@ -1,11 +1,67 @@
 #!/usr/bin/env bash
 
-FILENAME=$(readlink -f "$1")
+parse() {
+  optspec=":h-:"
+  while getopts "$optspec" optchar; do
+    case "${optchar}" in
+      -)
+        case "${OPTARG}" in
+          bios)
+            BIOSDIR="${!OPTIND}"; OPTIND=$(( OPTIND + 1 ))
+            ;;
+          config)
+            CONFIGDIR="${!OPTIND}"; OPTIND=$(( OPTIND + 1 ))
+            ;;
+          memcards)
+            MEMCARDSDIR="${!OPTIND}"; OPTIND=$(( OPTIND + 1 ))
+            ;;
+          *)
+            if [ "$OPTERR" = 1 ]; then # && [ "${optspec:0:1}" != ":" ]; then
+              echo "Unknown option --${OPTARG}" >&2
+            fi
+            ;;
+        esac;;
+      h)
+        echo "usage: $0 [--bios <bios-directory>] [--config <config-directory>] [--memcards <memcards-directory>] <image-file>" >&2
+        exit 2
+        ;;
+      *)
+        if [ "$OPTERR" != 1 ] || [ "${optspec:0:1}" = ":" ]; then
+          echo "Non-option argument: '-${OPTARG}'" >&2
+        fi
+        ;;
+    esac
+  done
+}
+
+SCRIPTDIR=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
+
+parse $*
+
+FILENAME=$(readlink -f "${@:$OPTIND}")
 
 IMGDIR=$(dirname "${FILENAME}")
-IMG=/images/$(basename "${FILENAME}")
+BASE=$(basename "${FILENAME}")
+IMG=/images/${BASE}
+NOEXT="${BASE%.*}"
 
-echo imgdir ${IMGDIR} img ${IMG}
+cd ${IMGDIR}
+
+BIOSDIR=$(readlink -f "${BIOSDIR:-${PWD}/bios}")
+CONFIGDIR=$(readlink -f "${CONFIGDIR:-${IMGDIR}/config/default}")
+MEMCARDSDIR=$(readlink -f "${MEMCARDSDIR:-${IMGDIR}/memcards/${NOEXT}}")
+
+echo imgdir ${IMGDIR} filename ${FILENAME} img ${IMG} noext ${NOEXT}
+
+echo bios ${BIOSDIR}
+echo config ${CONFIGDIR}
+echo memcards ${MEMCARDSDIR}
+echo remainder: ${@:$OPTIND}
+
+mkdir -p "${CONFIGDIR}"
+mkdir -p "${MEMCARDSDIR}"
+
+#exit 1
 
 	#-v /etc/machine-id:/etc/machine-id:ro \
 
@@ -24,10 +80,10 @@ docker run -it --rm \
   -v /run/user/$(id -u)/pulse/native:/tmp/.pulse-native	\
   -v /tmp/.X11-unix/X0:/tmp/.X11-unix/X0 \
   -v /etc/localtime:/etc/localtime:ro \
-  -v ${PWD}/data/bios:/bios \
-  -v ${IMGDIR}:/images \
-  -v ${PWD}/config:/config \
-  -v ${PWD}/memcards:/memcards \
+  -v "${BIOSDIR}":/bios \
+  -v "${IMGDIR}":/images \
+  -v "${CONFIGDIR}":/config \
+  -v "${MEMCARDSDIR}":/memcards \
   pcsx2 \
 	/app/bootstrap "${IMG}"
   #PCSX2 "${IMG}"
