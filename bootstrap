@@ -13,4 +13,5 @@ ln -sf /memcards /home/abc/.config/PCSX2/memcards
 chown -R abc.abc /home/abc
 
 cd /images
+echo MESA_LOADER_DRIVER_OVERRIDE $MESA_LOADER_DRIVER_OVERRIDE
 sudo -H -E -g abc -u abc PCSX2 "$@"
