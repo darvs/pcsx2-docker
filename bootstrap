@@ -9,6 +9,7 @@ useradd -m -d /home/abc -p /bin/bash -g root -G sudo,audio,video,plugdev -u ${PU
 mkdir -p /home/abc/{.local,.config}
 ln -s /config /home/abc/.config/PCSX2
 ln -sf /memcards /home/abc/.config/PCSX2/memcards
+ln -sf /bios /home/abc/.config/PCSX2/bios
 
 chown -R abc.abc /home/abc
 
