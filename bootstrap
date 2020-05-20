@@ -3,7 +3,10 @@
 chmod 666 /dev/input/*
 chmod -R 777 /dev/dri/*
 
-groupadd -g ${PGID} abc
+if [ ! $(getent group ${PGID}) ]; then
+	groupadd -g ${PGID} abc
+fi
+
 useradd -m -d /home/abc -p /bin/bash -g root -G sudo,audio,video,plugdev -u ${PUID} abc
 
 mkdir -p /home/abc/{.local,.config}
@@ -11,8 +14,8 @@ ln -s /config /home/abc/.config/PCSX2
 ln -sf /memcards /home/abc/.config/PCSX2/memcards
 ln -sf /bios /home/abc/.config/PCSX2/bios
 
-chown -R abc.abc /home/abc
+chown -R abc.${PGID} /home/abc
 
 cd /images
 echo MESA_LOADER_DRIVER_OVERRIDE $MESA_LOADER_DRIVER_OVERRIDE
-sudo -H -E -g abc -u abc PCSX2 "$@"
+sudo -H -E -g $(getent group ${PGID} | cut -d: -f 1) -u abc PCSX2 "$@"
