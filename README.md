@@ -28,6 +28,14 @@ run --bios ~/ps2/bios --config config/shared --memcards memcards/awesome-game ~/
 ```
 
 
+## Troubleshooting
+
+### Unknown server OS
+If you receive the following message
+```
+docker: unknown server OS: .
+```
+It's probably because the user trying to start the container is not part of the docker group.
 
 
 ## Notes
