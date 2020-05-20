@@ -16,6 +16,11 @@ ln -sf /bios /home/abc/.config/PCSX2/bios
 
 chown -R abc.${PGID} /home/abc
 
+# libGSdx-AVX2.so will crash PCSX2 on non-AVX2 CPUs.
+if [ ! $(grep "avx" /proc/cpuinfo) ]; then
+	rm /usr/lib/games/PCSX2/libGSdx-AVX2.so
+fi
+
 cd /images
 echo MESA_LOADER_DRIVER_OVERRIDE $MESA_LOADER_DRIVER_OVERRIDE
 sudo -H -E -g $(getent group ${PGID} | cut -d: -f 1) -u abc PCSX2 "$@"
